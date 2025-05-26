@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ALS Detection from Voice</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h2>ALS Detection based on Voice Signals</h2>
+        <p class="description">Upload .wav files from each of the 8 required categories for comprehensive analysis.</p>
+        
+        <form action="/predict" method="post" enctype="multipart/form-data">
+            {% for category in categories %}
+            <div class="file-upload">
+                <label for="{{ category }}">{{ category }}:</label>
+                <input type="file" id="{{ category }}" name="file_{{ category }}" accept=".wav" required>
+            </div>
+            {% endfor %}
+            
+            <button type="submit">Upload & Predict</button>
+        </form>
+        
+        {% if prediction %}
+        <div class="result">
+            <div class="final-result {% if 'ALS DETECTED' in prediction %}als-positive{% elif 'NO ALS DETECTED' in prediction %}als-negative{% else %}error{% endif %}">
+                {{ prediction }}
+            </div>
+            
+            {% if details %}
+            <div class="details-toggle">
+                <button id="toggle-details">Show Details</button>
+            </div>
+            
+            <div class="result-details" id="result-details" style="display: none;">
+                <pre>{{ details }}</pre>
+            </div>
+            {% endif %}
+        </div>
+        
+        <script>
+            document.getElementById('toggle-details').addEventListener('click', function() {
+                var details = document.getElementById('result-details');
+                var button = document.getElementById('toggle-details');
+                
+                if (details.style.display === 'none') {
+                    details.style.display = 'block';
+                    button.textContent = 'Hide Details';
+                } else {
+                    details.style.display = 'none';
+                    button.textContent = 'Show Details';
+                }
+            });
+        </script>
+        {% endif %}
+    </div>
+</body>
+</html>
